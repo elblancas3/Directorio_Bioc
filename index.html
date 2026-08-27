@@ -9,7 +9,6 @@
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   
-  <!-- Estilos personalizados -->
   <style>
     /* ===== RESET Y BASE ===== */
     * {
@@ -502,6 +501,40 @@
   let map;
   let markersLayer;
 
+  // ===== CONVERTIR GRADOS/MINUTOS/SEGUNDOS A DECIMAL =====
+  function convertirGMS(gmsString) {
+    if (!gmsString || typeof gmsString !== 'string') {
+      // Si ya es número, devolverlo
+      return typeof gmsString === 'number' ? gmsString : 0;
+    }
+    
+    // Limpiar espacios
+    gmsString = gmsString.trim().replace(/\s/g, '');
+    
+    // Buscar patrón: 87°22'43.416"W o 21°31'23.515"N
+    const match = gmsString.match(/(\d+)°(\d+)'([\d.]+)"([NSWE])/i);
+    
+    if (!match) {
+      // Si no es GMS, intentar parsear como número
+      const num = parseFloat(gmsString);
+      return isNaN(num) ? 0 : num;
+    }
+    
+    const grados = parseFloat(match[1]);
+    const minutos = parseFloat(match[2]);
+    const segundos = parseFloat(match[3]);
+    const direccion = match[4].toUpperCase();
+    
+    let decimal = grados + (minutos / 60) + (segundos / 3600);
+    
+    // Si es Oeste (W) o Sur (S), es negativo
+    if (direccion === 'W' || direccion === 'S') {
+      decimal = -decimal;
+    }
+    
+    return decimal;
+  }
+
   // ===== FUNCIÓN PARA CARGAR DATOS DESDE GOOGLE SHEETS =====
   async function cargarDatosDesdeSheets() {
     try {
@@ -523,24 +556,17 @@
       console.log('📝 Ejemplo de datos:', data[0]);
 
       sitios = data.map((item, index) => {
-        let lat = parseFloat(item['LATITUD DECIMAL'] || item['LATITUD'] || 0);
-        let lng = parseFloat(item['LONGITUD DECIMAL'] || item['LONGITUD'] || 0);
+        // ✅ CONVERTIR COORDENADAS AUTOMÁTICAMENTE
+        let lat = convertirGMS(item['LATITUD'] || item['LATITUD DECIMAL'] || 0);
+        let lng = convertirGMS(item['LONGITUD'] || item['LONGITUD DECIMAL'] || 0);
         
-        // CORRECCIÓN: Si la longitud es positiva, probablemente está invertida
-        if (lng > 0 && lat > 0) {
-          console.warn(`⚠️ Posible coordenada invertida en fila ${index+1}: lat=${lat}, lng=${lng}`);
-          const temp = lat;
-          lat = lng;
-          lng = temp;
-          console.log(`🔄 Corregido: lat=${lat}, lng=${lng}`);
-        }
+        // Validar que las coordenadas estén en Quintana Roo
+        // Latitud: 17.5° a 21.5° N
+        // Longitud: -89.5° a -86.5° O
+        const esQRoo = (lat >= 17.5 && lat <= 21.5) && (lng >= -89.5 && lng <= -86.5);
         
-        // Validar coordenadas en rangos de Quintana Roo
-        const esCoordenadaValida = (lat >= 17.5 && lat <= 21.5) && 
-                                   (lng >= -89.5 && lng <= -86.5);
-        
-        if (!esCoordenadaValida) {
-          console.warn(`⚠️ Coordenadas fuera de rango en fila ${index+1}: lat=${lat}, lng=${lng}`);
+        if (!esQRoo && lat !== 0 && lng !== 0) {
+          console.warn(`⚠️ Coordenada fuera de QRoo en fila ${index+1}: lat=${lat}, lng=${lng} - ${item.RUTA || 'Sin nombre'}`);
         }
 
         return {
@@ -616,7 +642,6 @@
         iconAnchor: [18, 18]
       });
 
-      // Construir popup mejorado
       let popupContent = `
         <div style="max-width:280px;">
           <strong style="font-size:1.1rem;color:#1a3a2a;">${sitio.ruta}</strong><br>
@@ -629,7 +654,6 @@
         popupContent += `<br><p style="margin:6px 0;font-size:0.95rem;">${sitio.experiencia}</p>`;
       }
 
-      // Manejo de imágenes con fallback
       if (sitio.imagen && sitio.imagen.trim() !== '') {
         const urlImagen = sitio.imagen.trim();
         popupContent += `
@@ -670,11 +694,9 @@
 
   // ===== GENERAR FILTROS =====
   function generarFiltros() {
-    // Obtener comunidades únicas
     const comunidades = [...new Set(sitios.map(s => s.comunidad))].sort();
     const containerComunidades = document.getElementById('filterComunidades');
     
-    // Limpiar contenido previo (excepto el label)
     while (containerComunidades.children.length > 1) {
       containerComunidades.removeChild(containerComunidades.lastChild);
     }
@@ -692,11 +714,9 @@
       containerComunidades.appendChild(label);
     });
 
-    // Obtener tipos de experiencia únicos
     const tipos = [...new Set(sitios.map(s => s.tipo_experiencia))].sort();
     const containerTipos = document.getElementById('filterTipos');
     
-    // Limpiar contenido previo (excepto el label)
     while (containerTipos.children.length > 1) {
       containerTipos.removeChild(containerTipos.lastChild);
     }
@@ -710,143 +730,4 @@
       const label = document.createElement('label');
       label.htmlFor = cb.id;
       label.textContent = tipo;
-      containerTipos.appendChild(cb);
-      containerTipos.appendChild(label);
-    });
-  }
-
-  // ===== APLICAR FILTROS =====
-  function aplicarFiltros() {
-    const comunidadesSeleccionadas = Array.from(
-      document.querySelectorAll('#filterComunidades input:checked')
-    ).map(cb => cb.value);
-
-    const tiposSeleccionados = Array.from(
-      document.querySelectorAll('#filterTipos input:checked')
-    ).map(cb => cb.value);
-
-    const filtrados = sitios.filter(s => {
-      const matchComunidad = comunidadesSeleccionadas.length === 0 || 
-        comunidadesSeleccionadas.includes(s.comunidad);
-      const matchTipo = tiposSeleccionados.length === 0 || 
-        tiposSeleccionados.includes(s.tipo_experiencia);
-      return matchComunidad && matchTipo;
-    });
-
-    actualizarMarcadores(filtrados);
-  }
-
-  // ===== PARTÍCULAS DEL HERO =====
-  function initParticles() {
-    const canvas = document.getElementById('heroParticles');
-    const ctx = canvas.getContext('2d');
-
-    function resizeCanvas() {
-      const hero = canvas.parentElement;
-      canvas.width = hero.offsetWidth;
-      canvas.height = hero.offsetHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    const particles = [];
-    for (let i = 0; i < 60; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 4 + 2,
-        dx: (Math.random() - 0.5) * 0.5,
-        dy: (Math.random() - 0.5) * 0.5,
-        color: `hsla(${140 + Math.random() * 30}, 70%, 60%, ${0.2 + Math.random() * 0.3})`
-      });
-    }
-
-    function drawParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
-        ctx.fill();
-        p.x += p.dx;
-        p.y += p.dy;
-        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
-      });
-      requestAnimationFrame(drawParticles);
-    }
-    drawParticles();
-  }
-
-  // ===== MENÚ MÓVIL =====
-  function initMobileNav() {
-    const toggle = document.getElementById('navToggle');
-    const nav = document.getElementById('mainNav');
-
-    toggle.addEventListener('click', () => {
-      nav.classList.toggle('open');
-      toggle.textContent = nav.classList.contains('open') ? '✕' : '☰';
-    });
-
-    nav.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        nav.classList.remove('open');
-        toggle.textContent = '☰';
-      });
-    });
-  }
-
-  // ===== INICIALIZACIÓN PRINCIPAL =====
-  document.addEventListener('DOMContentLoaded', async () => {
-    // Inicializar elementos básicos
-    initParticles();
-    initMobileNav();
-    initMap();
-
-    // Cargar datos desde Sheets
-    const cargando = document.createElement('div');
-    cargando.textContent = 'Cargando datos...';
-    cargando.style.cssText = 'text-align:center;padding:1rem;color:#d4a057;';
-    document.getElementById('contadorSitios').appendChild(cargando);
-
-    await cargarDatosDesdeSheets();
-
-    // Remover mensaje de carga
-    cargando.remove();
-
-    if (sitios.length === 0) {
-      const errorMsg = document.createElement('p');
-      errorMsg.textContent = '⚠️ No se pudieron cargar los datos. Verifica la conexión con Google Sheets.';
-      errorMsg.style.cssText = 'color:#ff6b6b;text-align:center;padding:1rem;';
-      document.getElementById('contadorSitios').appendChild(errorMsg);
-      return;
-    }
-
-    // Generar filtros y mostrar datos
-    generarFiltros();
-    aplicarFiltros();
-
-    // Eventos de filtros
-    document.querySelectorAll('.filter-checkbox').forEach(input => {
-      input.addEventListener('change', aplicarFiltros);
-    });
-
-    document.getElementById('filterReset').addEventListener('click', () => {
-      document.querySelectorAll('.filter-checkbox').forEach(cb => cb.checked = false);
-      aplicarFiltros();
-    });
-
-    // Scroll suave
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      });
-    });
-  });
-</script>
-</body>
-</html>
+      containerTip
