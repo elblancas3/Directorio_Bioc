@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Directorio de Actores ZRCPT - Mundo Sagrado</title>
+    <meta name="description" content="Directorio de actores de la Zona de Restauración y Conservación del Patrimonio Territorial (ZRCPT) - Mundo Sagrado en Quintana Roo" />
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f5f2ec;
+            color: #1e2b2c;
+            line-height: 1.6;
+        }
+
+        .site-header {
+            background: #1a3a2a;
+            color: #fff;
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .brand-mark {
+            font-size: 2.2rem;
+            background: #d4a057;
+            color: #1a3a2a;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+
+        .brand-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .brand-text small {
+            font-weight: 300;
+            opacity: 0.8;
+            font-size: 0.7rem;
+            display: block;
+        }
+
+        .main-nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .main-nav a {
+            color: #d4e8d8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 0.5rem 0;
+        }
+
+        .main-nav a:hover {
+            color: #d4a057;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+
+        .hero {
+            min-height: 70vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a3a2a 0%, #2d5a3d 50%, #1a3a2a 100%);
+            overflow: hidden;
+        }
+
+        .hero-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 58, 42, 0.6);
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            max-width: 800px;
+            padding: 2rem;
+            text-align: center;
+            color: #fff;
+        }
+
+        .eyebrow {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #d4a057;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .hero-sub {
+            font-size: 1.2rem;
+            color: #d4e8d8;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: #d4a057;
+            color: #1a3a2a;
+        }
+
+        .btn-primary:hover {
+            background: #c49040;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 160, 87, 0.3);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #d4e8d8;
+            border: 2px solid #d4e8d8;
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #d4a057;
+            color: #d4a057;
+        }
+
+        .btn-small {
+            padding: 0.4rem 1.2rem;
+            font-size: 0.85rem;
+        }
+
+        .section {
+            padding: 4rem 2rem;
+        }
+
+        .section-dark {
+            background: #1a2e26;
+            color: #fff;
+        }
+
+        .section-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-lead {
+            font-size: 1.1rem;
+            color: #b8cfc0;
+            margin-bottom: 2rem;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: #d4a057;
+            margin-right: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .filter-group input[type="checkbox"] {
+            display: none;
+        }
+
+        .filter-group label {
+            background: rgba(255, 255, 255, 0.1);
+            color: #b8cfc0;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+        }
+
+        .filter-group label:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .filter-group input[type="checkbox"]:checked+label {
+            background: #d4a057;
+            color: #1a2e26;
+            border-color: #d4a057;
+            font-weight: 600;
+        }
+
+        .map-wrap {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 4px solid #2d5a3d;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        #map {
+            height: 70vh;
+            width: 100%;
+            background: #2d5a3d;
+        }
+
+        .contador {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .contador span {
+            color: #d4a057;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .site-footer {
+            background: #0f241c;
+            color: #b8cfc0;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-small {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: block;
+            }
+
+            .main-nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: #1a3a2a;
+                flex-direction: column;
+                padding: 1rem 2rem;
+                gap: 0.5rem;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            }
+
+            .main-nav.open {
+                display: flex;
+            }
+
+            .hero-content h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero-sub {
+                font-size: 1rem;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 1rem;
+            }
+
+            .filter-group {
+                justify-content: center;
+            }
+
+            #map {
+                height: 50vh;
+            }
+        }
+
+        .leaflet-popup-content {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #1e2b2c;
+            min-width: 250px;
+            max-width: 320px;
+        }
+
+        .leaflet-popup-content strong {
+            color: #1a3a2a;
+            font-size: 1.1rem;
+        }
+
+        .leaflet-popup-content em {
+            color: #2d5a3d;
+            font-style: italic;
+        }
+
+        .popup-empresa {
+            color: #d4a057;
+            font-weight: 600;
+        }
+
+        .popup-contacto {
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .popup-imagen {
+            margin: 8px 0;
+            text-align: center;
+        }
+
+        .popup-imagen .img-link {
+            display: inline-block;
+            background: #1a3a2a;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            border: 1px solid #d4a057;
+        }
+
+        .popup-imagen .img-link:hover {
+            background: #d4a057;
+            color: #1a3a2a;
+        }
+
+        .popup-imagen .img-link .icono {
+            font-size: 1.2rem;
+            margin-right: 6px;
+        }
+
+        .popup-imagen .sin-imagen {
+            color: #999;
+            font-size: 0.85rem;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .map-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .map-selector button {
+            background: rgba(255, 255, 255, 0.1);
+            color: #b8cfc0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .map-selector button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .map-selector button.active {
+            background: #d4a057;
+            color: #1a2e26;
+            border-color: #d4a057;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="#inicio" class="brand">
+                <span class="brand-mark">🌿</span>
+                <span class="brand-text">Directorio ZRCPT<br /><small>Mundo Sagrado</small></span>
+            </a>
+            <nav class="main-nav" id="mainNav">
+                <a href="#inicio">Inicio</a>
+                <a href="#geovisor">Geovisor</a>
+            </nav>
+            <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">☰</button>
+        </div>
+    </header>
+
+    <section id="inicio" class="hero">
+        <canvas id="heroParticles" class="hero-particles"></canvas>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <p class="eyebrow">Zona de Restauración y Conservación</p>
+            <h1>Directorio de Actores<br />ZRCPT - Mundo Sagrado</h1>
+            <p class="hero-sub">Conectando a los guardianes del patrimonio territorial en Quintana Roo.</p>
+            <div class="hero-cta">
+                <a href="#geovisor" class="btn btn-primary">Explorar el geovisor</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="geovisor" class="section section-dark">
+        <div class="section-inner">
+            <p class="eyebrow">Geovisor</p>
+            <h2>Actores y experiencias de la ZRCPT</h2>
+            <p class="section-lead">Filtra por comunidad, tipo de experiencia o descubre todos los actores de la Zona de Restauración y Conservación del Patrimonio Territorial.</p>
+
+            <div class="contador" id="contadorSitios">
+                <span id="numeroSitios">0</span> actores registrados
+            </div>
+
+            <div class="filters" id="filters">
+                <div class="filter-group" id="filterComunidades">
+                    <span class="filter-label">Comunidad</span>
+                </div>
+                <div class="filter-group" id="filterTipos">
+                    <span class="filter-label">Tipo de experiencia</span>
+                </div>
+                <button id="filterReset" class="btn btn-ghost btn-small">Quitar filtros</button>
+            </div>
+
+            <div class="map-selector">
+                <button class="active" data-mapa="satelital">🛰️ Satelital</button>
+                <button data-mapa="topografico">🗺️ Topográfico</button>
+            </div>
+
+            <div class="map-wrap">
+                <div id="map"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>Directorio de Actores ZRCPT - Mundo Sagrado</p>
+            <p class="footer-small">Datos abiertos de la Zona de Restauración y Conservación del Patrimonio Territorial, Quintana Roo.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+
+    <script>
+        // ============================================================
+        // CONFIGURACIÓN
+        // ============================================================
+        const URL_SHEETS = 'https://script.google.com/macros/s/AKfycbxUxjt-83Qkfkx7B7XzpoKTlA4zShn8fPE3KVGc1FHT9n9yfzaugaiW26ylaFyXlV1GmQ/exec';
+
+        let sitios = [];
+        let map;
+        let markersLayer;
+        let capaMapa;
+
+        // ============================================================
+        // MAPAS
+        // ============================================================
+        const mapas = {
+            satelital: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '&copy; ESRI',
+                maxZoom: 19
+            }),
+            topografico: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenTopoMap',
+                maxZoom: 17
+            })
+        };
+
+        // ============================================================
+        // TIPOS DE EXPERIENCIA
+        // ============================================================
+        const TIPOS_EXPERIENCIA = [
+            'Tours en lancha', 'Paseos en kayak', 'Hospedaje', 'Observación de aves',
+            'Senderismo interpretativo', 'Paseos en canoa', 'Estación de campo',
+            'Jardín de orquídeas', 'Huerta agroecológica', 'Danza prehispánica',
+            'Música prehispánica', 'Taller de arte', 'Transporte turístico',
+            'Apiturismo', 'Educación ambiental', 'Productos agroecológicos',
+            'Medicina tradicional maya', 'Gastronomía típica', 'Chocolate artesanal',
+            'Investigación estudiantil', 'Paseos a cenotes', 'Paseos por cuevas',
+            'Espeleismo', 'Museo de insectos', 'Rappel', 'Tirolesa',
+            'Monitoreo comunitario', 'Cabañas eco-amigables', 'Experiencia de vida maya',
+            'Sitio arqueológico', 'Camping', 'Parcela agroecológica'
+        ];
+
+        // ============================================================
+        // CONVERTIR GRADOS/MINUTOS/SEGUNDOS A DECIMAL
+        // ============================================================
+        function convertirGMS(gmsString) {
+            if (typeof gmsString === 'number') return gmsString;
+            if (!gmsString || typeof gmsString !== 'string') return 0;
+            gmsString = gmsString.trim().replace(/\s/g, '');
+            const num = parseFloat(gmsString);
+            if (!isNaN(num) && gmsString.indexOf('°') === -1) return num;
+            const match = gmsString.match(/(\d+)°(\d+)'([\d.]+)"([NSWE])/i);
+            if (!match) return 0;
+            const grados = parseFloat(match[1]);
+            const minutos = parseFloat(match[2]);
+            const segundos = parseFloat(match[3]);
+            const direccion = match[4].toUpperCase();
+            let decimal = grados + (minutos / 60) + (segundos / 3600);
+            if (direccion === 'W' || direccion === 'S') decimal = -decimal;
+            return decimal;
+        }
+
+        // ============================================================
+        // CONVERTIR URL DE GOOGLE DRIVE A FORMATO DIRECTO
+        // ============================================================
+        function convertirURLImagen(url) {
+            if (!url || typeof url !== 'string') return null;
+            url = url.trim();
+            if (url === '') return null;
+
+            // Si es Google Drive, extraer ID y devolver URL en formato /view
+            if (url.includes('drive.google.com')) {
+                let match = url.match(/\/d\/([^\/]+)/);
+                if (!match) match = url.match(/\/file\/d\/([^\/]+)/);
+                if (!match) match = url.match(/id=([^&]+)/);
+                if (match) {
+                    const id = match[1];
+                    // Retornar URL en formato https://drive.google.com/file/d/ID/view
+                    return `https://drive.google.com/file/d/${id}/view`;
+                }
+                return null;
+            }
+
+            // Para otras URLs (GitHub, etc.), devolver la URL original
+            return url;
+        }
+
+        // ============================================================
+        // CLASIFICAR EXPERIENCIA
+        // ============================================================
+        function clasificarExperiencia(texto) {
+            if (!texto || typeof texto !== 'string') return 'Otro';
+            texto = texto.toLowerCase();
+
+            for (const tipo of TIPOS_EXPERIENCIA) {
+                const palabrasClave = tipo.toLowerCase().split(' ');
+                let coincidencias = 0;
+                for (const palabra of palabrasClave) {
+                    if (texto.includes(palabra)) coincidencias++;
+                }
+                if (coincidencias >= 2 || palabrasClave.some(p => texto.includes(p) && p.length > 3)) {
+                    return tipo;
+                }
+            }
+
+            const palabrasClave = ['cenote', 'senderismo', 'kayak', 'lancha', 'hospedaje', 'aves',
+                'gastronomía', 'chocolate', 'miel', 'agroecológico', 'medicina',
+                'danza', 'música', 'arte', 'educación', 'investigación', 'cueva',
+                'espeleismo', 'rappel', 'tiroless', 'camping', 'cabaña', 'monitoreo'
+            ];
+
+            for (const palabra of palabrasClave) {
+                if (texto.includes(palabra)) {
+                    for (const tipo of TIPOS_EXPERIENCIA) {
+                        if (tipo.toLowerCase().includes(palabra)) {
+                            return tipo;
+                        }
+                    }
+                }
+            }
+            return 'Otro';
+        }
+
+        // ============================================================
+        // CARGAR DATOS DESDE GOOGLE SHEETS
+        // ============================================================
+        async function cargarDatosDesdeSheets() {
+            try {
+                console.log('🔍 Cargando datos desde:', URL_SHEETS);
+                const res = await fetch(URL_SHEETS);
+                if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+                const data = await res.json();
+                console.log('📊 Datos recibidos:', data.length, 'registros');
+                if (data.length === 0) {
+                    console.warn('⚠️ No hay datos en la hoja');
+                    return [];
+                }
+                console.log('📝 Ejemplo de datos:', data[0]);
+
+                sitios = data.map((item, index) => {
+                    let lat = convertirGMS(item['LATITUD'] || item['LATITUD DECIMAL'] || 0);
+                    let lng = convertirGMS(item['LONGITUD'] || item['LONGITUD DECIMAL'] || 0);
+                    const experienciaTexto = item.Experiencia || '';
+                    const tipoExperiencia = clasificarExperiencia(experienciaTexto);
+                    const imagenUrl = convertirURLImagen(item['ENLACE FOTO']);
+
+                    return {
+                        id: item.id || `sitio-${index}`,
+                        ruta: item.RUTA || 'Sin nombre',
+                        comunidad: item.COMUNIDAD || 'Sin comunidad',
+                        lng: lng,
+                        lat: lat,
+                        empresa: item.EMPRESA || '',
+                        experiencia: experienciaTexto,
+                        tipo_experiencia: tipoExperiencia,
+                        imagen: imagenUrl,
+                        imagen_original: item['ENLACE FOTO'] || '',
+                        representante: item.REPRESENTANTE || '',
+                        telefono: item.TELÉFONO || ''
+                    };
+                }).filter(s => {
+                    const esValido = s.lat !== 0 && s.lng !== 0 && !isNaN(s.lat) && !isNaN(s.lng);
+                    if (!esValido) console.warn(`⚠️ Filtrado sitio con coordenadas inválidas: ${s.ruta}`);
+                    return esValido;
+                });
+
+                console.log('✅ Sitios válidos:', sitios.length);
+                if (sitios.length > 0) console.log('📍 Ejemplo:', sitios[0]);
+                return sitios;
+            } catch (error) {
+                console.error('❌ Error al cargar datos:', error);
+                alert('Error al cargar los datos. Revisa la consola para más detalles.');
+                return [];
+            }
+        }
+
+        // ============================================================
+        // INICIALIZAR MAPA
+        // ============================================================
+        function initMap() {
+            map = L.map('map').setView([19.6, -88.0], 8);
+            capaMapa = mapas.satelital;
+            capaMapa.addTo(map);
+            markersLayer = L.layerGroup().addTo(map);
+            console.log('🗺️ Mapa inicializado');
+        }
+
+        // ============================================================
+        // AJUSTAR MAPA A LOS PUNTOS
+        // ============================================================
+        function ajustarMapaAPuntos(sitiosFiltrados) {
+            if (!sitiosFiltrados || sitiosFiltrados.length === 0) {
+                map.setView([19.6, -88.0], 8);
+                return;
+            }
+            try {
+                const latLngs = sitiosFiltrados.map(s => [s.lat, s.lng]);
+                const bounds = L.latLngBounds(latLngs);
+                map.fitBounds(bounds, { padding: [50, 50] });
+                console.log('📍 Mapa ajustado a', sitiosFiltrados.length, 'puntos');
+            } catch (e) {
+                console.warn('Error al ajustar mapa:', e);
+                map.setView([19.6, -88.0], 8);
+            }
+        }
+
+        // ============================================================
+        // CAMBIAR MAPA
+        // ============================================================
+        function cambiarMapa(tipo) {
+            if (capaMapa) map.removeLayer(capaMapa);
+            capaMapa = mapas[tipo];
+            capaMapa.addTo(map);
+            document.querySelectorAll('.map-selector button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mapa === tipo);
+            });
+            console.log('🗺️ Mapa cambiado a:', tipo);
+        }
+
+        // ============================================================
+        // ACTUALIZAR MARCADORES
+        // ============================================================
+        function actualizarMarcadores(sitiosFiltrados) {
+            markersLayer.clearLayers();
+            console.log('🔄 Actualizando marcadores...');
+
+            if (!sitiosFiltrados || sitiosFiltrados.length === 0) {
+                document.getElementById('numeroSitios').textContent = '0';
+                ajustarMapaAPuntos([]);
+                return;
+            }
+
+            const iconosPorTipo = {
+                'Tours en lancha': '🚤',
+                'Paseos en kayak': '🛶',
+                'Hospedaje': '🏠',
+                'Observación de aves': '🐦',
+                'Senderismo interpretativo': '🥾',
+                'Paseos en canoa': '🛶',
+                'Estación de campo': '🔬',
+                'Jardín de orquídeas': '🌸',
+                'Huerta agroecológica': '🌱',
+                'Danza prehispánica': '💃',
+                'Música prehispánica': '🎵',
+                'Taller de arte': '🎨',
+                'Transporte turístico': '🚐',
+                'Apiturismo': '🐝',
+                'Educación ambiental': '📚',
+                'Productos agroecológicos': '🌿',
+                'Medicina tradicional maya': '🌿',
+                'Gastronomía típica': '🍽️',
+                'Chocolate artesanal': '🍫',
+                'Investigación estudiantil': '📖',
+                'Paseos a cenotes': '💧',
+                'Paseos por cuevas': '🕳️',
+                'Espeleismo': '🕳️',
+                'Museo de insectos': '🦋',
+                'Rappel': '🧗',
+                'Tirolesa': '🪢',
+                'Monitoreo comunitario': '📊',
+                'Cabañas eco-amigables': '🌳',
+                'Experiencia de vida maya': '🏛️',
+                'Sitio arqueológico': '🏛️',
+                'Camping': '⛺',
+                'Parcela agroecológica': '🌾',
+                'Otro': '📍'
+            };
+
+            sitiosFiltrados.forEach(sitio => {
+                const emoji = iconosPorTipo[sitio.tipo_experiencia] || '📍';
+
+                const icono = L.divIcon({
+                    html: `<div style="background:#1a3a2a;color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid #d4a057;box-shadow:0 2px 8px rgba(0,0,0,0.3);">${emoji}</div>`,
+                    className: '',
+                    iconSize: [36, 36],
+                    iconAnchor: [18, 18]
+                });
+
+                let popupContent = `
+                    <div style="max-width:300px;">
+                        <strong style="font-size:1.1rem;color:#1a3a2a;">${sitio.ruta}</strong><br>
+                        <span class="popup-empresa">${sitio.empresa || 'Sin empresa'}</span><br>
+                        <em style="color:#2d5a3d;">${sitio.tipo_experiencia}</em><br>
+                        <span style="background:#1a3a2a;color:#fff;padding:2px 8px;border-radius:10px;font-size:0.8rem;display:inline-block;margin:4px 0;">📍 ${sitio.comunidad}</span>
+                `;
+
+                if (sitio.experiencia) {
+                    popupContent += `<br><p style="margin:6px 0;font-size:0.9rem;color:#333;">${sitio.experiencia}</p>`;
+                }
+
+                // Botón para ver imagen (abre enlace externo al Drive)
+                const enlaceImagen = sitio.imagen || sitio.imagen_original;
+                if (enlaceImagen && enlaceImagen.trim() !== '') {
+                    popupContent += `
+                        <div class="popup-imagen">
+                            <a href="${enlaceImagen}" target="_blank" rel="noopener noreferrer" class="img-link" style="display:inline-block;padding:6px 12px;background:#d4a057;color:#1a3a2a;text-decoration:none;border-radius:6px;margin-top:6px;font-weight:500;cursor:pointer;transition:background 0.3s;">
+                                <span>🖼️</span> Ver imagen en Drive
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    popupContent += `
+                        <div class="popup-imagen">
+                            <span class="sin-imagen">📷 Sin imagen disponible</span>
+                        </div>
+                    `;
+                }
+
+                if (sitio.representante || sitio.telefono) {
+                    popupContent += `<div class="popup-contacto">`;
+                    if (sitio.representante) popupContent += `👤 ${sitio.representante}<br>`;
+                    if (sitio.telefono) popupContent += `📞 ${sitio.telefono}`;
+                    popupContent += `</div>`;
+                }
+                popupContent += `</div>`;
+
+                const marker = L.marker([sitio.lat, sitio.lng], { icon: icono })
+                    .addTo(markersLayer)
+                    .bindPopup(popupContent, { maxWidth: 350 });
+            });
+
+            document.getElementById('numeroSitios').textContent = sitiosFiltrados.length;
+            ajustarMapaAPuntos(sitiosFiltrados);
+            console.log('✅ Marcadores actualizados:', sitiosFiltrados.length);
+        }
+
+        // ============================================================
+        // GENERAR FILTROS
+        // ============================================================
+        function generarFiltros() {
+            const comunidades = [...new Set(sitios.map(s => s.comunidad))].sort();
+            const container = document.getElementById('filterComunidades');
+            while (container.children.length > 1) container.removeChild(container.lastChild);
+            comunidades.forEach(comunidad => {
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.id = `com-${comunidad}`;
+                cb.value = comunidad;
+                cb.className = 'filter-checkbox';
+                const label = document.createElement('label');
+                label.htmlFor = cb.id;
+                label.textContent = comunidad;
+                container.appendChild(cb);
+                container.appendChild(label);
+            });
+
+            const tipos = [...new Set(sitios.map(s => s.tipo_experiencia))].sort();
+            const containerTipos = document.getElementById('filterTipos');
+            while (containerTipos.children.length > 1) containerTipos.removeChild(containerTipos.lastChild);
+            tipos.forEach(tipo => {
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.id = `tipo-${tipo}`;
+                cb.value = tipo;
+                cb.className = 'filter-checkbox';
+                const label = document.createElement('label');
+                label.htmlFor = cb.id;
+                label.textContent = tipo;
+                containerTipos.appendChild(cb);
+                containerTipos.appendChild(label);
+            });
+            console.log('✅ Filtros generados');
+        }
+
+        // ============================================================
+        // APLICAR FILTROS
+        // ============================================================
+        function aplicarFiltros() {
+            const comunidades = Array.from(document.querySelectorAll('#filterComunidades input:checked')).map(cb => cb.value);
+            const tipos = Array.from(document.querySelectorAll('#filterTipos input:checked')).map(cb => cb.value);
+
+            // Si no hay filtros seleccionados, mostrar TODOS los puntos
+            let filtrados;
+            if (comunidades.length === 0 && tipos.length === 0) {
+                filtrados = sitios;
+                console.log('📍 Sin filtros: mostrando todos los puntos (' + sitios.length + ')');
+            } else {
+                filtrados = sitios.filter(s => {
+                    const matchComunidad = comunidades.length === 0 || comunidades.includes(s.comunidad);
+                    const matchTipo = tipos.length === 0 || tipos.includes(s.tipo_experiencia);
+                    return matchComunidad && matchTipo;
+                });
+                console.log('🔍 Filtros aplicados:', { 
+                    comunidades: comunidades.length, 
+                    tipos: tipos.length, 
+                    resultado: filtrados.length 
+                });
+            }
+            
+            actualizarMarcadores(filtrados);
+        }
+
+        // ============================================================
+        // PARTÍCULAS DEL HERO
+        // ============================================================
+        function initParticles() {
+            const canvas = document.getElementById('heroParticles');
+            const ctx = canvas.getContext('2d');
+
+            function resizeCanvas() {
+                const hero = canvas.parentElement;
+                canvas.width = hero.offsetWidth;
+                canvas.height = hero.offsetHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            const particles = [];
+            for (let i = 0; i < 60; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    r: Math.random() * 4 + 2,
+                    dx: (Math.random() - 0.5) * 0.5,
+                    dy: (Math.random() - 0.5) * 0.5,
+                    color: `hsla(${140 + Math.random() * 30}, 70%, 60%, ${0.2 + Math.random() * 0.3})`
+                });
+            }
+
+            function drawParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.fill();
+                    p.x += p.dx;
+                    p.y += p.dy;
+                    if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+                });
+                requestAnimationFrame(drawParticles);
+            }
+            drawParticles();
+        }
+
+        // ============================================================
+        // MENÚ MÓVIL
+        // ============================================================
+        function initMobileNav() {
+            const toggle = document.getElementById('navToggle');
+            const nav = document.getElementById('mainNav');
+            toggle.addEventListener('click', () => {
+                nav.classList.toggle('open');
+                toggle.textContent = nav.classList.contains('open') ? '✕' : '☰';
+            });
+            nav.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    nav.classList.remove('open');
+                    toggle.textContent = '☰';
+                });
+            });
+        }
+
+        // ============================================================
+        // INICIALIZACIÓN PRINCIPAL
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Iniciando aplicación...');
+
+            // 1. Elementos visuales
+            initParticles();
+            initMobileNav();
+            initMap();
+
+            // 2. Selector de mapa
+            document.querySelectorAll('.map-selector button').forEach(btn => {
+                btn.addEventListener('click', () => cambiarMapa(btn.dataset.mapa));
+            });
+
+            // 3. Mensaje de carga
+            const cargando = document.createElement('div');
+            cargando.textContent = 'Cargando datos...';
+            cargando.style.cssText = 'text-align:center;padding:1rem;color:#d4a057;';
+            document.getElementById('contadorSitios').appendChild(cargando);
+
+            // 4. Cargar datos
+            const resultado = await cargarDatosDesdeSheets();
+            console.log('📥 Resultado de carga:', resultado.length, 'sitios');
+            console.log('📊 Variable global sitios:', sitios.length, 'sitios');
+            cargando.remove();
+
+            if (sitios.length === 0) {
+                const errorMsg = document.createElement('p');
+                errorMsg.textContent = '⚠️ No se pudieron cargar los datos. Verifica la conexión con Google Sheets. Consulta la consola para más detalles.';
+                errorMsg.style.cssText = 'color:#ff6b6b;text-align:center;padding:1rem;';
+                document.getElementById('contadorSitios').appendChild(errorMsg);
+                console.error('❌ No hay sitios cargados:', sitios);
+                return;
+            }
+
+            // 5. Generar filtros
+            generarFiltros();
+
+            // 6. Asegurar que todos los checkboxes estén desmarcados
+            document.querySelectorAll('.filter-checkbox').forEach(cb => cb.checked = false);
+
+            // 7. MOSTRAR TODOS LOS PUNTOS INICIALMENTE
+            console.log('🎯 Mostrando todos los puntos:', sitios.length);
+            actualizarMarcadores(sitios);
+
+            // 8. Eventos de filtros
+            document.querySelectorAll('.filter-checkbox').forEach(input => {
+                input.addEventListener('change', () => {
+                    console.log('✅ Filtro cambiado, aplicando...');
+                    aplicarFiltros();
+                });
+            });
+
+            document.getElementById('filterReset').addEventListener('click', () => {
+                console.log('🔄 Reseteando filtros...');
+                document.querySelectorAll('.filter-checkbox').forEach(cb => cb.checked = false);
+                actualizarMarcadores(sitios);
+            });
+
+            // 9. Scroll suave
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            });
+
+            console.log('✅ Aplicación lista');
+        });
+    </script>
+</body>
+</html>
