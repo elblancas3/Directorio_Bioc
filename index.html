@@ -496,7 +496,6 @@
 
 <script>
   // ===== CONFIGURACIÓN =====
-  // ¡REEMPLAZA ESTA URL CON LA DE TU APPS SCRIPT!
   const URL_SHEETS = 'https://script.google.com/macros/s/AKfycbxUxjt-83Qkfkx7B7XzpoKTlA4zShn8fPE3KVGc1FHT9n9yfzaugaiW26ylaFyXlV1GmQ/exec';
   
   let sitios = [];
@@ -504,90 +503,81 @@
   let markersLayer;
 
   // ===== FUNCIÓN PARA CARGAR DATOS DESDE GOOGLE SHEETS =====
- async function cargarDatosDesdeSheets() {
-  try {
-    console.log('🔍 Cargando datos desde:', URL_SHEETS);
-    const res = await fetch(URL_SHEETS);
-    
-    if (!res.ok) {
-      throw new Error(`Error HTTP: ${res.status}`);
-    }
-    
-    const data = await res.json();
-    console.log('📊 Datos recibidos:', data.length, 'registros');
-    
-    if (data.length === 0) {
-      console.warn('⚠️ No hay datos en la hoja');
+  async function cargarDatosDesdeSheets() {
+    try {
+      console.log('🔍 Cargando datos desde:', URL_SHEETS);
+      const res = await fetch(URL_SHEETS);
+      
+      if (!res.ok) {
+        throw new Error(`Error HTTP: ${res.status}`);
+      }
+      
+      const data = await res.json();
+      console.log('📊 Datos recibidos:', data.length, 'registros');
+      
+      if (data.length === 0) {
+        console.warn('⚠️ No hay datos en la hoja');
+        return [];
+      }
+
+      console.log('📝 Ejemplo de datos:', data[0]);
+
+      sitios = data.map((item, index) => {
+        let lat = parseFloat(item['LATITUD DECIMAL'] || item['LATITUD'] || 0);
+        let lng = parseFloat(item['LONGITUD DECIMAL'] || item['LONGITUD'] || 0);
+        
+        // CORRECCIÓN: Si la longitud es positiva, probablemente está invertida
+        if (lng > 0 && lat > 0) {
+          console.warn(`⚠️ Posible coordenada invertida en fila ${index+1}: lat=${lat}, lng=${lng}`);
+          const temp = lat;
+          lat = lng;
+          lng = temp;
+          console.log(`🔄 Corregido: lat=${lat}, lng=${lng}`);
+        }
+        
+        // Validar coordenadas en rangos de Quintana Roo
+        const esCoordenadaValida = (lat >= 17.5 && lat <= 21.5) && 
+                                   (lng >= -89.5 && lng <= -86.5);
+        
+        if (!esCoordenadaValida) {
+          console.warn(`⚠️ Coordenadas fuera de rango en fila ${index+1}: lat=${lat}, lng=${lng}`);
+        }
+
+        return {
+          id: item.id || `sitio-${index}`,
+          ruta: item.RUTA || 'Sin nombre',
+          comunidad: item.COMUNIDAD || 'Sin comunidad',
+          lng: lng,
+          lat: lat,
+          empresa: item.EMPRESA || '',
+          experiencia: item.Experiencia || '',
+          tipo_experiencia: item['Tipo de experiencia'] || 'Otro',
+          imagen: item['ENLACE FOTO'] || '',
+          representante: item.REPRESENTANTE || '',
+          telefono: item.TELÉFONO || ''
+        };
+      }).filter(s => {
+        const esValido = s.lat !== 0 && s.lng !== 0 && 
+                         !isNaN(s.lat) && !isNaN(s.lng);
+        if (!esValido) {
+          console.warn(`⚠️ Filtrado sitio con coordenadas inválidas: ${s.ruta}`);
+        }
+        return esValido;
+      });
+      
+      console.log('✅ Sitios válidos:', sitios.length);
+      if (sitios.length > 0) {
+        console.log('📍 Ejemplo de sitio válido:', sitios[0]);
+      }
+      
+      return sitios;
+      
+    } catch (error) {
+      console.error('❌ Error al cargar datos:', error);
+      alert('Error al cargar los datos. Revisa la consola para más detalles.');
       return [];
     }
-
-    // Mostrar ejemplo de datos para diagnóstico
-    console.log('📝 Ejemplo de datos:', data[0]);
-
-    sitios = data.map((item, index) => {
-      // Obtener coordenadas con validación
-      let lat = parseFloat(item['LATITUD DECIMAL'] || item['LATITUD'] || 0);
-      let lng = parseFloat(item['LONGITUD DECIMAL'] || item['LONGITUD'] || 0);
-      
-      // ✅ CORRECCIÓN: Si la longitud es positiva en Quintana Roo, probablemente está invertida
-      // Quintana Roo está en el oeste (-87° a -89° de longitud)
-      if (lng > 0 && lat > 0) {
-        // Si ambas son positivas, probablemente están invertidas
-        console.warn(`⚠️ Posible coordenada invertida en fila ${index+1}: lat=${lat}, lng=${lng}`);
-        // Intentar corregir: intercambiar
-        const temp = lat;
-        lat = lng;
-        lng = temp;
-        console.log(`🔄 Corregido: lat=${lat}, lng=${lng}`);
-      }
-      
-      // Validar que las coordenadas estén en rangos de Quintana Roo
-      // Latitud: 17.5° a 21.5° N
-      // Longitud: -89.5° a -86.5° O
-      const esCoordenadaValida = (lat >= 17.5 && lat <= 21.5) && 
-                                  (lng >= -89.5 && lng <= -86.5);
-      
-      if (!esCoordenadaValida) {
-        console.warn(`⚠️ Coordenadas fuera de rango en fila ${index+1}: lat=${lat}, lng=${lng}`);
-      }
-
-      // Mapeo de campos
-      return {
-        id: item.id || `sitio-${index}`,
-        ruta: item.RUTA || 'Sin nombre',
-        comunidad: item.COMUNIDAD || 'Sin comunidad',
-        lng: lng,
-        lat: lat,
-        empresa: item.EMPRESA || '',
-        experiencia: item.Experiencia || '',
-        tipo_experiencia: item['Tipo de experiencia'] || 'Otro',
-        imagen: item['ENLACE FOTO'] || '',
-        representante: item.REPRESENTANTE || '',
-        telefono: item.TELÉFONO || ''
-      };
-    }).filter(s => {
-      // Filtrar sitios con coordenadas inválidas
-      const esValido = s.lat !== 0 && s.lng !== 0 && 
-                       !isNaN(s.lat) && !isNaN(s.lng);
-      if (!esValido) {
-        console.warn(`⚠️ Filtrado sitio con coordenadas inválidas: ${s.ruta}`);
-      }
-      return esValido;
-    });
-    
-    console.log('✅ Sitios válidos:', sitios.length);
-    if (sitios.length > 0) {
-      console.log('📍 Ejemplo de sitio válido:', sitios[0]);
-    }
-    
-    return sitios;
-    
-  } catch (error) {
-    console.error('❌ Error al cargar datos:', error);
-    alert('Error al cargar los datos. Revisa la consola para más detalles.');
-    return [];
   }
-}
 
   // ===== INICIALIZAR MAPA =====
   function initMap() {
@@ -601,103 +591,64 @@
   }
 
   // ===== ACTUALIZAR MARCADORES =====
- function actualizarMarcadores(sitiosFiltrados) {
-  markersLayer.clearLayers();
+  function actualizarMarcadores(sitiosFiltrados) {
+    markersLayer.clearLayers();
 
-  const iconosPorTipo = {
-    'Ecoturismo': '🌿',
-    'Cultural': '🏛️',
-    'Gastronomía': '🍽️',
-    'Artesanías': '🎨',
-    'Aventura': '🚵',
-    'Comunitario': '🏘️',
-    'Educativo': '📚',
-    'Conservación': '🌳',
-    'Otro': '📍'
-  };
+    const iconosPorTipo = {
+      'Ecoturismo': '🌿',
+      'Cultural': '🏛️',
+      'Gastronomía': '🍽️',
+      'Artesanías': '🎨',
+      'Aventura': '🚵',
+      'Comunitario': '🏘️',
+      'Educativo': '📚',
+      'Conservación': '🌳',
+      'Otro': '📍'
+    };
 
-  sitiosFiltrados.forEach(sitio => {
-    const emoji = iconosPorTipo[sitio.tipo_experiencia] || '📍';
+    sitiosFiltrados.forEach(sitio => {
+      const emoji = iconosPorTipo[sitio.tipo_experiencia] || '📍';
 
-    const icono = L.divIcon({
-      html: `<div style="background:#1a3a2a;color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid #d4a057;box-shadow:0 2px 8px rgba(0,0,0,0.3);">${emoji}</div>`,
-      className: '',
-      iconSize: [36, 36],
-      iconAnchor: [18, 18]
-    });
+      const icono = L.divIcon({
+        html: `<div style="background:#1a3a2a;color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid #d4a057;box-shadow:0 2px 8px rgba(0,0,0,0.3);">${emoji}</div>`,
+        className: '',
+        iconSize: [36, 36],
+        iconAnchor: [18, 18]
+      });
 
-    // Construir popup mejorado
-    let popupContent = `
-      <div style="max-width:280px;">
-        <strong style="font-size:1.1rem;color:#1a3a2a;">${sitio.ruta}</strong><br>
-        <span style="color:#d4a057;font-weight:600;">${sitio.empresa || 'Sin empresa'}</span><br>
-        <em style="color:#2d5a3d;">${sitio.tipo_experiencia}</em><br>
-        <span style="background:#1a3a2a;color:#fff;padding:2px 8px;border-radius:10px;font-size:0.8rem;display:inline-block;margin:4px 0;">📍 ${sitio.comunidad}</span>
-    `;
-
-    if (sitio.experiencia) {
-      popupContent += `<br><p style="margin:6px 0;font-size:0.95rem;">${sitio.experiencia}</p>`;
-    }
-
-    // ✅ MEJORA: Manejo de imágenes con fallback
-    if (sitio.imagen && sitio.imagen.trim() !== '') {
-      // Verificar si es una URL válida
-      const urlImagen = sitio.imagen.trim();
-      // Intentar mostrar la imagen con un manejador de error
-      popupContent += `
-        <br>
-        <div style="margin:8px 0;border-radius:8px;overflow:hidden;background:#f0f0f0;min-height:100px;display:flex;align-items:center;justify-content:center;">
-          <img 
-            src="${urlImagen}" 
-            alt="${sitio.ruta}" 
-            style="max-width:100%;max-height:150px;object-fit:cover;border-radius:8px;"
-            onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\\'color:#999;padding:10px;\\'>🖼️ Imagen no disponible</span>';"
-          />
-        </div>
-      `;
-    } else {
-      popupContent += `<br><span style="color:#999;font-size:0.85rem;">🖼️ Sin imagen disponible</span>`;
-    }
-
-    if (sitio.representante || sitio.telefono) {
-      popupContent += `<div style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;font-size:0.9rem;color:#555;">`;
-      if (sitio.representante) {
-        popupContent += `👤 ${sitio.representante}<br>`;
-      }
-      if (sitio.telefono) {
-        popupContent += `📞 ${sitio.telefono}`;
-      }
-      popupContent += `</div>`;
-    }
-
-    popupContent += `</div>`;
-
-    const marker = L.marker([sitio.lat, sitio.lng], { icon: icono })
-      .addTo(markersLayer)
-      .bindPopup(popupContent, { maxWidth: 300 });
-  });
-
-  document.getElementById('numeroSitios').textContent = sitiosFiltrados.length;
-}
-
-      // Construir popup con los campos
+      // Construir popup mejorado
       let popupContent = `
-        <strong>${sitio.ruta}</strong><br>
-        <span class="popup-empresa">${sitio.empresa}</span><br>
-        <em>${sitio.tipo_experiencia}</em><br>
-        <span style="background:#1a3a2a;color:#fff;padding:2px 8px;border-radius:10px;font-size:0.8rem;">${sitio.comunidad}</span>
+        <div style="max-width:280px;">
+          <strong style="font-size:1.1rem;color:#1a3a2a;">${sitio.ruta}</strong><br>
+          <span style="color:#d4a057;font-weight:600;">${sitio.empresa || 'Sin empresa'}</span><br>
+          <em style="color:#2d5a3d;">${sitio.tipo_experiencia}</em><br>
+          <span style="background:#1a3a2a;color:#fff;padding:2px 8px;border-radius:10px;font-size:0.8rem;display:inline-block;margin:4px 0;">📍 ${sitio.comunidad}</span>
       `;
 
       if (sitio.experiencia) {
-        popupContent += `<br>${sitio.experiencia}`;
+        popupContent += `<br><p style="margin:6px 0;font-size:0.95rem;">${sitio.experiencia}</p>`;
       }
 
-      if (sitio.imagen) {
-        popupContent += `<br><img src="${sitio.imagen}" alt="${sitio.ruta}" loading="lazy">`;
+      // Manejo de imágenes con fallback
+      if (sitio.imagen && sitio.imagen.trim() !== '') {
+        const urlImagen = sitio.imagen.trim();
+        popupContent += `
+          <br>
+          <div style="margin:8px 0;border-radius:8px;overflow:hidden;background:#f0f0f0;min-height:100px;display:flex;align-items:center;justify-content:center;">
+            <img 
+              src="${urlImagen}" 
+              alt="${sitio.ruta}" 
+              style="max-width:100%;max-height:150px;object-fit:cover;border-radius:8px;"
+              onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\\'color:#999;padding:10px;\\'>🖼️ Imagen no disponible</span>';"
+            />
+          </div>
+        `;
+      } else {
+        popupContent += `<br><span style="color:#999;font-size:0.85rem;">🖼️ Sin imagen disponible</span>`;
       }
 
       if (sitio.representante || sitio.telefono) {
-        popupContent += `<div class="popup-contacto">`;
+        popupContent += `<div style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;font-size:0.9rem;color:#555;">`;
         if (sitio.representante) {
           popupContent += `👤 ${sitio.representante}<br>`;
         }
@@ -707,12 +658,13 @@
         popupContent += `</div>`;
       }
 
+      popupContent += `</div>`;
+
       const marker = L.marker([sitio.lat, sitio.lng], { icon: icono })
         .addTo(markersLayer)
-        .bindPopup(popupContent);
+        .bindPopup(popupContent, { maxWidth: 300 });
     });
 
-    // Actualizar contador
     document.getElementById('numeroSitios').textContent = sitiosFiltrados.length;
   }
 
@@ -721,6 +673,11 @@
     // Obtener comunidades únicas
     const comunidades = [...new Set(sitios.map(s => s.comunidad))].sort();
     const containerComunidades = document.getElementById('filterComunidades');
+    
+    // Limpiar contenido previo (excepto el label)
+    while (containerComunidades.children.length > 1) {
+      containerComunidades.removeChild(containerComunidades.lastChild);
+    }
     
     comunidades.forEach(comunidad => {
       const cb = document.createElement('input');
@@ -738,6 +695,11 @@
     // Obtener tipos de experiencia únicos
     const tipos = [...new Set(sitios.map(s => s.tipo_experiencia))].sort();
     const containerTipos = document.getElementById('filterTipos');
+    
+    // Limpiar contenido previo (excepto el label)
+    while (containerTipos.children.length > 1) {
+      containerTipos.removeChild(containerTipos.lastChild);
+    }
     
     tipos.forEach(tipo => {
       const cb = document.createElement('input');
