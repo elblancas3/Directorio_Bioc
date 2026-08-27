@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
-        /* ===== RESET Y BASE ===== */
         * {
             margin: 0;
             padding: 0;
@@ -24,7 +23,6 @@
             line-height: 1.6;
         }
 
-        /* ===== HEADER ===== */
         .site-header {
             background: #1a3a2a;
             color: #fff;
@@ -102,7 +100,6 @@
             cursor: pointer;
         }
 
-        /* ===== HERO ===== */
         .hero {
             min-height: 70vh;
             position: relative;
@@ -172,7 +169,6 @@
             flex-wrap: wrap;
         }
 
-        /* ===== BOTONES ===== */
         .btn {
             display: inline-block;
             padding: 0.8rem 2.5rem;
@@ -215,7 +211,6 @@
             font-size: 0.85rem;
         }
 
-        /* ===== SECCIÓN GEOVISOR ===== */
         .section {
             padding: 4rem 2rem;
         }
@@ -236,7 +231,6 @@
             margin-bottom: 2rem;
         }
 
-        /* ===== FILTROS ===== */
         .filters {
             display: flex;
             flex-wrap: wrap;
@@ -288,7 +282,6 @@
             font-weight: 600;
         }
 
-        /* ===== MAPA ===== */
         .map-wrap {
             border-radius: 20px;
             overflow: hidden;
@@ -302,7 +295,6 @@
             background: #2d5a3d;
         }
 
-        /* ===== CONTADOR ===== */
         .contador {
             background: rgba(255, 255, 255, 0.05);
             padding: 0.5rem 1.5rem;
@@ -317,7 +309,6 @@
             font-size: 1.2rem;
         }
 
-        /* ===== FOOTER ===== */
         .site-footer {
             background: #0f241c;
             color: #b8cfc0;
@@ -336,7 +327,6 @@
             margin-top: 0.5rem;
         }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .nav-toggle {
                 display: block;
@@ -382,7 +372,6 @@
             }
         }
 
-        /* ===== ESTILOS DEL POPUP ===== */
         .leaflet-popup-content {
             font-size: 0.95rem;
             line-height: 1.5;
@@ -401,21 +390,6 @@
             font-style: italic;
         }
 
-        .leaflet-popup-content img {
-            border-radius: 10px;
-            margin-top: 8px;
-            max-width: 100%;
-            height: auto;
-            max-height: 200px;
-            object-fit: cover;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .leaflet-popup-content img:hover {
-            transform: scale(1.02);
-        }
-
         .popup-empresa {
             color: #d4a057;
             font-weight: 600;
@@ -428,40 +402,40 @@
         }
 
         .popup-imagen {
-            position: relative;
             margin: 8px 0;
+            text-align: center;
+        }
+
+        .popup-imagen .img-link {
+            display: inline-block;
+            background: #1a3a2a;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            border: 1px solid #d4a057;
+        }
+
+        .popup-imagen .img-link:hover {
+            background: #d4a057;
+            color: #1a3a2a;
+        }
+
+        .popup-imagen .img-link .icono {
+            font-size: 1.2rem;
+            margin-right: 6px;
+        }
+
+        .popup-imagen .sin-imagen {
+            color: #999;
+            font-size: 0.85rem;
+            padding: 8px;
+            background: #f5f5f5;
             border-radius: 8px;
-            overflow: hidden;
-            background: #f0f0f0;
-            min-height: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .popup-imagen img {
-            width: 100%;
-            height: auto;
-            max-height: 200px;
-            object-fit: cover;
-            cursor: pointer;
-        }
-
-        .popup-imagen .img-placeholder {
-            color: #999;
-            padding: 20px;
-            text-align: center;
-            font-size: 0.85rem;
-        }
-
-        .popup-imagen .img-error {
-            color: #999;
-            padding: 20px;
-            text-align: center;
-            font-size: 0.85rem;
-        }
-
-        /* ===== SELECTOR DE MAPA ===== */
         .map-selector {
             display: flex;
             gap: 0.5rem;
@@ -489,24 +463,11 @@
             color: #1a2e26;
             border-color: #d4a057;
         }
-
-        .popup-imagen .click-hint {
-            position: absolute;
-            bottom: 8px;
-            right: 8px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            font-size: 0.6rem;
-            padding: 3px 8px;
-            border-radius: 4px;
-            pointer-events: none;
-            opacity: 0.8;
-        }
     </style>
 </head>
 <body>
 
-    <!-- ==================== HEADER ==================== -->
+    <!-- HEADER -->
     <header class="site-header">
         <div class="header-inner">
             <a href="#inicio" class="brand">
@@ -521,7 +482,7 @@
         </div>
     </header>
 
-    <!-- ==================== HERO ==================== -->
+    <!-- HERO -->
     <section id="inicio" class="hero">
         <canvas id="heroParticles" class="hero-particles"></canvas>
         <div class="hero-overlay"></div>
@@ -535,7 +496,7 @@
         </div>
     </section>
 
-    <!-- ==================== GEOVISOR ==================== -->
+    <!-- GEOVISOR -->
     <section id="geovisor" class="section section-dark">
         <div class="section-inner">
             <p class="eyebrow">Geovisor</p>
@@ -567,7 +528,7 @@
         </div>
     </section>
 
-    <!-- ==================== FOOTER ==================== -->
+    <!-- FOOTER -->
     <footer class="site-footer">
         <div class="footer-inner">
             <p>Directorio de Actores ZRCPT - Mundo Sagrado</p>
@@ -575,7 +536,7 @@
         </div>
     </footer>
 
-    <!-- ==================== SCRIPTS ==================== -->
+    <!-- SCRIPTS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
     </script>
 
@@ -600,7 +561,7 @@
             })
         };
 
-        // ===== TIPOS DE EXPERIENCIA ÚNICOS =====
+        // ===== TIPOS DE EXPERIENCIA =====
         const TIPOS_EXPERIENCIA = [
             'Tours en lancha', 'Paseos en kayak', 'Hospedaje', 'Observación de aves',
             'Senderismo interpretativo', 'Paseos en canoa', 'Estación de campo',
@@ -640,45 +601,33 @@
             return decimal;
         }
 
-        // ===== CONVERTIR URL DE IMAGEN (CORREGIDO PARA GOOGLE DRIVE) =====
+        // ===== CONVERTIR URL DE IMAGEN (GOOGLE DRIVE) =====
         function convertirURLImagen(url) {
             if (!url || typeof url !== 'string') return null;
             url = url.trim();
             if (url === '') return null;
 
-            // --- Google Drive (Nuevo formato) ---
-            // Maneja: https://drive.google.com/file/d/ID/view
             if (url.includes('drive.google.com')) {
-                // Busca el ID en diferentes formatos
-                let match = url.match(/\/d\/([^\/]+)/); // Formato /d/ID
-                if (!match) {
-                    match = url.match(/\/file\/d\/([^\/]+)/); // Formato /file/d/ID
-                }
-                if (!match) {
-                    match = url.match(/id=([^&]+)/); // Formato ?id=ID
-                }
+                let match = url.match(/\/d\/([^\/]+)/);
+                if (!match) match = url.match(/\/file\/d\/([^\/]+)/);
+                if (!match) match = url.match(/id=([^&]+)/);
                 if (match) {
                     const id = match[1];
-                    // Usar el enlace de exportación directa
                     return `https://drive.google.com/uc?export=view&id=${id}`;
                 }
-                // Si no se pudo extraer el ID, devuelve null
                 return null;
             }
 
-            // --- Dropbox ---
             if (url.includes('dropbox.com') && !url.includes('raw=1')) {
                 return url + '?raw=1';
             }
 
-            // --- Otras URLs ---
             return url;
         }
 
         // ===== CLASIFICAR EXPERIENCIA =====
         function clasificarExperiencia(texto) {
             if (!texto || typeof texto !== 'string') return 'Otro';
-
             texto = texto.toLowerCase();
 
             for (const tipo of TIPOS_EXPERIENCIA) {
@@ -779,21 +728,17 @@
         // ===== INICIALIZAR MAPA =====
         function initMap() {
             map = L.map('map').setView([19.6, -88.0], 8);
-
             capaMapa = mapas.satelital;
             capaMapa.addTo(map);
-
             markersLayer = L.layerGroup().addTo(map);
         }
 
         // ===== AJUSTAR MAPA A LOS PUNTOS =====
         function ajustarMapaAPuntos(sitiosFiltrados) {
             if (sitiosFiltrados.length === 0) {
-                // Si no hay puntos, ir a vista general de QRoo
                 map.setView([19.6, -88.0], 8);
                 return;
             }
-
             const latLngs = sitiosFiltrados.map(s => [s.lat, s.lng]);
             const bounds = L.latLngBounds(latLngs);
             map.fitBounds(bounds, { padding: [50, 50] });
@@ -806,7 +751,6 @@
             }
             capaMapa = mapas[tipo];
             capaMapa.addTo(map);
-
             document.querySelectorAll('.map-selector button').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.mapa === tipo);
             });
@@ -817,39 +761,21 @@
             markersLayer.clearLayers();
 
             const iconosPorTipo = {
-                'Tours en lancha': '🚤',
-                'Paseos en kayak': '🛶',
-                'Hospedaje': '🏠',
-                'Observación de aves': '🐦',
-                'Senderismo interpretativo': '🥾',
-                'Paseos en canoa': '🛶',
-                'Estación de campo': '🔬',
-                'Jardín de orquídeas': '🌸',
-                'Huerta agroecológica': '🌱',
-                'Danza prehispánica': '💃',
-                'Música prehispánica': '🎵',
-                'Taller de arte': '🎨',
-                'Transporte turístico': '🚐',
-                'Apiturismo': '🐝',
-                'Educación ambiental': '📚',
-                'Productos agroecológicos': '🌿',
-                'Medicina tradicional maya': '🌿',
-                'Gastronomía típica': '🍽️',
-                'Chocolate artesanal': '🍫',
-                'Investigación estudiantil': '📖',
-                'Paseos a cenotes': '💧',
-                'Paseos por cuevas': '🕳️',
-                'Espeleismo': '🕳️',
-                'Museo de insectos': '🦋',
-                'Rappel': '🧗',
-                'Tirolesa': '🪢',
-                'Monitoreo comunitario': '📊',
-                'Cabañas eco-amigables': '🌳',
-                'Experiencia de vida maya': '🏛️',
-                'Sitio arqueológico': '🏛️',
-                'Camping': '⛺',
-                'Parcela agroecológica': '🌾',
-                'Otro': '📍'
+                'Tours en lancha': '🚤', 'Paseos en kayak': '🛶', 'Hospedaje': '🏠',
+                'Observación de aves': '🐦', 'Senderismo interpretativo': '🥾',
+                'Paseos en canoa': '🛶', 'Estación de campo': '🔬',
+                'Jardín de orquídeas': '🌸', 'Huerta agroecológica': '🌱',
+                'Danza prehispánica': '💃', 'Música prehispánica': '🎵',
+                'Taller de arte': '🎨', 'Transporte turístico': '🚐',
+                'Apiturismo': '🐝', 'Educación ambiental': '📚',
+                'Productos agroecológicos': '🌿', 'Medicina tradicional maya': '🌿',
+                'Gastronomía típica': '🍽️', 'Chocolate artesanal': '🍫',
+                'Investigación estudiantil': '📖', 'Paseos a cenotes': '💧',
+                'Paseos por cuevas': '🕳️', 'Espeleismo': '🕳️',
+                'Museo de insectos': '🦋', 'Rappel': '🧗', 'Tirolesa': '🪢',
+                'Monitoreo comunitario': '📊', 'Cabañas eco-amigables': '🌳',
+                'Experiencia de vida maya': '🏛️', 'Sitio arqueológico': '🏛️',
+                'Camping': '⛺', 'Parcela agroecológica': '🌾', 'Otro': '📍'
             };
 
             sitiosFiltrados.forEach(sitio => {
@@ -863,36 +789,32 @@
                 });
 
                 let popupContent = `
-                        <div style="max-width:300px;">
-                            <strong style="font-size:1.1rem;color:#1a3a2a;">${sitio.ruta}</strong><br>
-                            <span class="popup-empresa">${sitio.empresa || 'Sin empresa'}</span><br>
-                            <em style="color:#2d5a3d;">${sitio.tipo_experiencia}</em><br>
-                            <span style="background:#1a3a2a;color:#fff;padding:2px 8px;border-radius:10px;font-size:0.8rem;display:inline-block;margin:4px 0;">📍 ${sitio.comunidad}</span>
-                        `;
+                    <div style="max-width:300px;">
+                        <strong style="font-size:1.1rem;color:#1a3a2a;">${sitio.ruta}</strong><br>
+                        <span class="popup-empresa">${sitio.empresa || 'Sin empresa'}</span><br>
+                        <em style="color:#2d5a3d;">${sitio.tipo_experiencia}</em><br>
+                        <span style="background:#1a3a2a;color:#fff;padding:2px 8px;border-radius:10px;font-size:0.8rem;display:inline-block;margin:4px 0;">📍 ${sitio.comunidad}</span>
+                `;
 
                 if (sitio.experiencia) {
                     popupContent += `<br><p style="margin:6px 0;font-size:0.9rem;color:#333;">${sitio.experiencia}</p>`;
                 }
 
-                // --- IMAGEN CON ENLACE CORREGIDO ---
+                // === IMAGEN: Botón con ícono que abre en nueva pestaña ===
                 if (sitio.imagen) {
-                    const imagenHtml = `
-                            <div class="popup-imagen">
-                                <img 
-                                    src="${sitio.imagen}" 
-                                    alt="${sitio.ruta}" 
-                                    loading="lazy"
-                                    onclick="window.open('${sitio.imagen}', '_blank')"
-                                    onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'img-error\\'>🖼️ Imagen no disponible</div>';"
-                                    style="cursor:pointer;"
-                                />
-                                <span class="click-hint">🔗 Click para ampliar</span>
-                            </div>
-                        `;
-                    popupContent += imagenHtml;
+                    popupContent += `
+                        <div class="popup-imagen">
+                            <a href="${sitio.imagen}" target="_blank" rel="noopener noreferrer" class="img-link">
+                                <span class="icono">🖼️</span> Ver imagen
+                            </a>
+                        </div>
+                    `;
                 } else {
-                    popupContent +=
-                        `<div class="popup-imagen"><div class="img-placeholder">🖼️ Sin imagen disponible</div></div>`;
+                    popupContent += `
+                        <div class="popup-imagen">
+                            <span class="sin-imagen">📷 Sin imagen disponible</span>
+                        </div>
+                    `;
                 }
 
                 if (sitio.representante || sitio.telefono) {
@@ -914,8 +836,6 @@
             });
 
             document.getElementById('numeroSitios').textContent = sitiosFiltrados.length;
-
-            // Ajustar mapa a los puntos
             ajustarMapaAPuntos(sitiosFiltrados);
         }
 
@@ -972,7 +892,6 @@
                 document.querySelectorAll('#filterTipos input:checked')
             ).map(cb => cb.value);
 
-            // Si no hay filtros seleccionados, mostrar TODOS los sitios
             const filtrados = sitios.filter(s => {
                 const matchComunidad = comunidadesSeleccionadas.length === 0 ||
                     comunidadesSeleccionadas.includes(s.comunidad);
@@ -1050,7 +969,6 @@
             initMobileNav();
             initMap();
 
-            // Selector de mapa
             document.querySelectorAll('.map-selector button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     cambiarMapa(btn.dataset.mapa);
@@ -1062,9 +980,7 @@
             cargando.style.cssText = 'text-align:center;padding:1rem;color:#d4a057;';
             document.getElementById('contadorSitios').appendChild(cargando);
 
-            await carg
-
-            arDatosDesdeSheets();
+            await cargarDatosDesdeSheets();
             cargando.remove();
 
             if (sitios.length === 0) {
@@ -1075,16 +991,16 @@
                 return;
             }
 
-            // --- GENERAR FILTROS ---
+            // 1. GENERAR FILTROS
             generarFiltros();
 
-            // --- MOSTRAR TODOS LOS PUNTOS AL INICIO ---
-            // Asegurarse de que todos los checkboxes estén desmarcados
+            // 2. ASEGURAR QUE TODOS LOS CHECKBOX ESTÉN DESMARCADOS
             document.querySelectorAll('.filter-checkbox').forEach(cb => cb.checked = false);
-            // Aplicar filtros (sin ninguno seleccionado, mostrará todos)
+
+            // 3. APLICAR FILTROS (MUESTRA TODOS)
             aplicarFiltros();
 
-            // --- EVENTOS DE FILTROS ---
+            // 4. EVENTOS DE FILTROS
             document.querySelectorAll('.filter-checkbox').forEach(input => {
                 input.addEventListener('change', aplicarFiltros);
             });
@@ -1094,7 +1010,6 @@
                 aplicarFiltros();
             });
 
-            // --- SCROLL SUAVE ---
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
                     e.preventDefault();
