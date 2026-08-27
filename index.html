@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
+        /* ===== RESET Y BASE ===== */
         * {
             margin: 0;
             padding: 0;
@@ -23,6 +24,7 @@
             line-height: 1.6;
         }
 
+        /* ===== HEADER ===== */
         .site-header {
             background: #1a3a2a;
             color: #fff;
@@ -100,6 +102,7 @@
             cursor: pointer;
         }
 
+        /* ===== HERO ===== */
         .hero {
             min-height: 70vh;
             position: relative;
@@ -169,6 +172,7 @@
             flex-wrap: wrap;
         }
 
+        /* ===== BOTONES ===== */
         .btn {
             display: inline-block;
             padding: 0.8rem 2.5rem;
@@ -211,6 +215,7 @@
             font-size: 0.85rem;
         }
 
+        /* ===== SECCIÓN GEOVISOR ===== */
         .section {
             padding: 4rem 2rem;
         }
@@ -231,6 +236,7 @@
             margin-bottom: 2rem;
         }
 
+        /* ===== FILTROS ===== */
         .filters {
             display: flex;
             flex-wrap: wrap;
@@ -282,6 +288,7 @@
             font-weight: 600;
         }
 
+        /* ===== MAPA ===== */
         .map-wrap {
             border-radius: 20px;
             overflow: hidden;
@@ -295,6 +302,7 @@
             background: #2d5a3d;
         }
 
+        /* ===== CONTADOR ===== */
         .contador {
             background: rgba(255, 255, 255, 0.05);
             padding: 0.5rem 1.5rem;
@@ -309,6 +317,7 @@
             font-size: 1.2rem;
         }
 
+        /* ===== FOOTER ===== */
         .site-footer {
             background: #0f241c;
             color: #b8cfc0;
@@ -327,6 +336,7 @@
             margin-top: 0.5rem;
         }
 
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .nav-toggle {
                 display: block;
@@ -372,6 +382,7 @@
             }
         }
 
+        /* ===== ESTILOS DEL POPUP ===== */
         .leaflet-popup-content {
             font-size: 0.95rem;
             line-height: 1.5;
@@ -436,6 +447,7 @@
             border-radius: 8px;
         }
 
+        /* ===== SELECTOR DE MAPA ===== */
         .map-selector {
             display: flex;
             gap: 0.5rem;
@@ -467,7 +479,7 @@
 </head>
 <body>
 
-    <!-- HEADER -->
+    <!-- ==================== HEADER ==================== -->
     <header class="site-header">
         <div class="header-inner">
             <a href="#inicio" class="brand">
@@ -482,7 +494,7 @@
         </div>
     </header>
 
-    <!-- HERO -->
+    <!-- ==================== HERO ==================== -->
     <section id="inicio" class="hero">
         <canvas id="heroParticles" class="hero-particles"></canvas>
         <div class="hero-overlay"></div>
@@ -496,7 +508,7 @@
         </div>
     </section>
 
-    <!-- GEOVISOR -->
+    <!-- ==================== GEOVISOR ==================== -->
     <section id="geovisor" class="section section-dark">
         <div class="section-inner">
             <p class="eyebrow">Geovisor</p>
@@ -528,7 +540,7 @@
         </div>
     </section>
 
-    <!-- FOOTER -->
+    <!-- ==================== FOOTER ==================== -->
     <footer class="site-footer">
         <div class="footer-inner">
             <p>Directorio de Actores ZRCPT - Mundo Sagrado</p>
@@ -536,7 +548,7 @@
         </div>
     </footer>
 
-    <!-- SCRIPTS -->
+    <!-- ==================== SCRIPTS ==================== -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
     </script>
 
@@ -601,12 +613,13 @@
             return decimal;
         }
 
-        // ===== CONVERTIR URL DE IMAGEN (GOOGLE DRIVE) =====
+        // ===== CONVERTIR URL DE IMAGEN (SOLO PARA GOOGLE DRIVE) =====
         function convertirURLImagen(url) {
             if (!url || typeof url !== 'string') return null;
             url = url.trim();
             if (url === '') return null;
 
+            // Solo convertir enlaces de Google Drive al formato de vista directa
             if (url.includes('drive.google.com')) {
                 let match = url.match(/\/d\/([^\/]+)/);
                 if (!match) match = url.match(/\/file\/d\/([^\/]+)/);
@@ -618,10 +631,7 @@
                 return null;
             }
 
-            if (url.includes('dropbox.com') && !url.includes('raw=1')) {
-                return url + '?raw=1';
-            }
-
+            // Para otras URLs (como GitHub), devolver la URL original
             return url;
         }
 
@@ -686,6 +696,8 @@
 
                     const experienciaTexto = item.Experiencia || '';
                     const tipoExperiencia = clasificarExperiencia(experienciaTexto);
+
+                    // Convertir la URL de la imagen (para Google Drive)
                     const imagenUrl = convertirURLImagen(item['ENLACE FOTO']);
 
                     return {
@@ -697,7 +709,7 @@
                         empresa: item.EMPRESA || '',
                         experiencia: experienciaTexto,
                         tipo_experiencia: tipoExperiencia,
-                        imagen: imagenUrl,
+                        imagen: imagenUrl, // URL ya convertida o null
                         imagen_original: item['ENLACE FOTO'] || '',
                         representante: item.REPRESENTANTE || '',
                         telefono: item.TELÉFONO || ''
@@ -735,13 +747,18 @@
 
         // ===== AJUSTAR MAPA A LOS PUNTOS =====
         function ajustarMapaAPuntos(sitiosFiltrados) {
-            if (sitiosFiltrados.length === 0) {
+            if (!sitiosFiltrados || sitiosFiltrados.length === 0) {
                 map.setView([19.6, -88.0], 8);
                 return;
             }
-            const latLngs = sitiosFiltrados.map(s => [s.lat, s.lng]);
-            const bounds = L.latLngBounds(latLngs);
-            map.fitBounds(bounds, { padding: [50, 50] });
+            try {
+                const latLngs = sitiosFiltrados.map(s => [s.lat, s.lng]);
+                const bounds = L.latLngBounds(latLngs);
+                map.fitBounds(bounds, { padding: [50, 50] });
+            } catch (e) {
+                console.warn('Error al ajustar mapa:', e);
+                map.setView([19.6, -88.0], 8);
+            }
         }
 
         // ===== CAMBIAR MAPA =====
@@ -759,6 +776,12 @@
         // ===== ACTUALIZAR MARCADORES =====
         function actualizarMarcadores(sitiosFiltrados) {
             markersLayer.clearLayers();
+
+            if (!sitiosFiltrados || sitiosFiltrados.length === 0) {
+                document.getElementById('numeroSitios').textContent = '0';
+                ajustarMapaAPuntos([]);
+                return;
+            }
 
             const iconosPorTipo = {
                 'Tours en lancha': '🚤', 'Paseos en kayak': '🛶', 'Hospedaje': '🏠',
@@ -800,11 +823,12 @@
                     popupContent += `<br><p style="margin:6px 0;font-size:0.9rem;color:#333;">${sitio.experiencia}</p>`;
                 }
 
-                // === IMAGEN: Botón con ícono que abre en nueva pestaña ===
-                if (sitio.imagen) {
+                // === IMAGEN: Botón que redirige al enlace ===
+                const enlaceImagen = sitio.imagen || sitio.imagen_original;
+                if (enlaceImagen && enlaceImagen.trim() !== '') {
                     popupContent += `
                         <div class="popup-imagen">
-                            <a href="${sitio.imagen}" target="_blank" rel="noopener noreferrer" class="img-link">
+                            <a href="${enlaceImagen}" target="_blank" rel="noopener noreferrer" class="img-link">
                                 <span class="icono">🖼️</span> Ver imagen
                             </a>
                         </div>
@@ -965,24 +989,29 @@
 
         // ===== INICIALIZACIÓN PRINCIPAL =====
         document.addEventListener('DOMContentLoaded', async () => {
+            // 1. Inicializar elementos visuales
             initParticles();
             initMobileNav();
             initMap();
 
+            // 2. Selector de mapa
             document.querySelectorAll('.map-selector button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     cambiarMapa(btn.dataset.mapa);
                 });
             });
 
+            // 3. Mostrar mensaje de carga
             const cargando = document.createElement('div');
             cargando.textContent = 'Cargando datos...';
             cargando.style.cssText = 'text-align:center;padding:1rem;color:#d4a057;';
             document.getElementById('contadorSitios').appendChild(cargando);
 
+            // 4. Cargar datos desde Google Sheets
             await cargarDatosDesdeSheets();
             cargando.remove();
 
+            // 5. Verificar si hay datos
             if (sitios.length === 0) {
                 const errorMsg = document.createElement('p');
                 errorMsg.textContent = '⚠️ No se pudieron cargar los datos. Verifica la conexión con Google Sheets.';
@@ -991,25 +1020,27 @@
                 return;
             }
 
-            // 1. GENERAR FILTROS
+            // 6. Generar filtros
             generarFiltros();
 
-            // 2. ASEGURAR QUE TODOS LOS CHECKBOX ESTÉN DESMARCADOS
+            // 7. Asegurar que todos los checkboxes estén desmarcados
             document.querySelectorAll('.filter-checkbox').forEach(cb => cb.checked = false);
 
-            // 3. APLICAR FILTROS (MUESTRA TODOS)
+            // 8. Aplicar filtros (esto mostrará TODOS los puntos)
             aplicarFiltros();
 
-            // 4. EVENTOS DE FILTROS
+            // 9. Eventos de filtros
             document.querySelectorAll('.filter-checkbox').forEach(input => {
                 input.addEventListener('change', aplicarFiltros);
             });
 
+            // 10. Botón "Quitar filtros"
             document.getElementById('filterReset').addEventListener('click', () => {
                 document.querySelectorAll('.filter-checkbox').forEach(cb => cb.checked = false);
                 aplicarFiltros();
             });
 
+            // 11. Scroll suave
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
                     e.preventDefault();
